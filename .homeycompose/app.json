@@ -1,23 +1,39 @@
 {
   "id": "com.wled.slideeffect",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
-  "platforms": ["local"],
-  "name": { "en": "YAWSEE" },
-  "description": { "en": "Yet Another WLED Slide & Exit Effect — sliding on/off animations for WLED LED strips." },
-  "tags": { "en": ["wled", "led", "esp32", "neopixel", "addressable"] },
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "YAWSEE"
+  },
+  "description": {
+    "en": "Yet Another WLED Slide & Exit Effect — sliding on/off animations for WLED LED strips."
+  },
+  "tags": {
+    "en": [
+      "wled",
+      "led",
+      "esp32",
+      "neopixel",
+      "addressable"
+    ]
+  },
   "category": "lights",
   "brandColor": "#4A90D9",
   "images": {
-    "small":  "/assets/images/small.png",
-    "large":  "/assets/images/large.png",
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
     "xlarge": "/assets/images/xlarge.png"
   },
   "author": {
     "name": "Mr-V34",
     "email": "info@v34.com"
   },
-  "bugs": { "url": "https://github.com/Mr-V34/homey-wled-yawsee/issues" },
+  "bugs": {
+    "url": "https://github.com/Mr-V34/homey-wled-yawsee/issues"
+  },
   "source": "https://github.com/Mr-V34/homey-wled-yawsee"
 }
