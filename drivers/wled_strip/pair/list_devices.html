@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline';">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 24px;
+      color: #1a1a1a;
+    }
+    h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+
+    .device {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .device:hover  { background: #f0f6ff; border-color: #4A90D9; }
+    .device-icon   { width: 36px; height: 36px; background: #4A90D9; border-radius: 8px; flex-shrink: 0; }
+    .device-name   { font-size: 15px; font-weight: 500; }
+    .device-ip     { font-size: 12px; color: #888; margin-top: 2px; }
+    .device.adding { opacity: 0.5; pointer-events: none; }
+
+    .spinner {
+      text-align: center;
+      padding: 32px 0;
+      color: #888;
+      font-size: 14px;
+    }
+    .empty {
+      font-size: 14px;
+      color: #888;
+      padding: 16px 0;
+    }
+    .error-msg {
+      font-size: 13px;
+      color: #d9534f;
+      padding: 8px 0;
+    }
+    .manual-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #4A90D9;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h2>YAWSEE — Select Device</h2>
+  <div id="list"><p class="spinner">Searching network…</p></div>
+  <span class="manual-link" id="manual-link">Can't find your device? Enter IP manually.</span>
+
+  <script type="application/javascript">
+    // In modern Homey SDK3, `Homey` is a direct global — no onHomeyReady wrapper.
+
+    function _safe(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    var listEl = document.getElementById('list');
+
+    document.getElementById('manual-link').addEventListener('click', function() {
+      Homey.showView('manual_entry');
+    });
+
+    Homey.emit('get_devices', {})
+      .then(function(devices) {
+        listEl.innerHTML = '';
+
+        if (!devices || devices.length === 0) {
+          listEl.innerHTML = '<p class="empty">No WLED devices found on the network.<br>Use the link below to add one manually.</p>';
+          return;
+        }
+
+        devices.forEach(function(device) {
+          var el = document.createElement('div');
+          el.className = 'device';
+          el.innerHTML =
+            '<div class="device-icon"></div>' +
+            '<div>' +
+              '<div class="device-name">' + _safe(device.name) + '</div>' +
+              '<div class="device-ip">' + _safe(device.store && device.store.address ? device.store.address : '') + '</div>' +
+            '</div>';
+
+          el.addEventListener('click', function() {
+            el.classList.add('adding');
+            el.querySelector('.device-name').textContent += ' — Adding…';
+
+            Homey.createDevice(device)
+              .then(function() {
+                Homey.done();
+              })
+              .catch(function(err) {
+                el.classList.remove('adding');
+                el.querySelector('.device-name').textContent = device.name;
+                listEl.insertAdjacentHTML(
+                  'beforeend',
+                  '<p class="error-msg">Error: ' + _safe(err && err.message ? err.message : String(err)) + '</p>'
+                );
+              });
+          });
+
+          listEl.appendChild(el);
+        });
+      })
+      .catch(function(err) {
+        listEl.innerHTML =
+          '<p class="error-msg">Search failed: ' +
+          _safe(err && err.message ? err.message : String(err)) +
+          '</p>' +
+          '<p class="empty">Use the link below to add manually.</p>';
+      });
+  </script>
+</body>
+</html>

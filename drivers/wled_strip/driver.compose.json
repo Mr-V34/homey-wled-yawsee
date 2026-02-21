@@ -1,0 +1,34 @@
+{
+  "name": { "en": "WLED Strip" },
+  "class": "light",
+  "capabilities": [
+    "onoff",
+    "dim",
+    "light_hue",
+    "light_saturation",
+    "light_temperature",
+    "light_mode"
+  ],
+  "capabilitiesOptions": {
+    "dim": { "title": { "en": "Brightness" } },
+    "light_temperature": { "title": { "en": "Warm / Cool" } }
+  },
+  "platforms": ["local"],
+  "connectivity": ["lan"],
+  "discovery": "wled",
+  "pair": [
+    {
+      "id": "list_devices",
+      "title": { "en": "Select WLED Device" }
+    },
+    {
+      "id": "manual_entry",
+      "title": { "en": "Enter IP Address" }
+    }
+  ],
+  "images": {
+    "small":  "/drivers/wled_strip/assets/images/small.png",
+    "large":  "/drivers/wled_strip/assets/images/large.png",
+    "xlarge": "/drivers/wled_strip/assets/images/xlarge.png"
+  }
+}

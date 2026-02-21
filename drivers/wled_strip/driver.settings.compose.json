@@ -1,0 +1,32 @@
+[
+  {
+    "id": "num_leds",
+    "type": "number",
+    "label": { "en": "Number of LEDs" },
+    "value": 20,
+    "min": 1,
+    "max": 1024,
+    "hint": { "en": "Must match your physical LED count." }
+  },
+  {
+    "id": "slide_speed_ms",
+    "type": "number",
+    "label": { "en": "Slide speed (ms per LED)" },
+    "value": 50,
+    "min": 10,
+    "max": 500,
+    "hint": { "en": "50 ms × 20 LEDs = 1 second total animation." }
+  },
+  {
+    "id": "firmware",
+    "type": "label",
+    "label": { "en": "WLED Firmware" },
+    "value": "Unknown"
+  },
+  {
+    "id": "ip_address",
+    "type": "label",
+    "label": { "en": "IP Address" },
+    "value": "Unknown"
+  }
+]
