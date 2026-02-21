@@ -1,0 +1,18 @@
+{
+  "pair": {
+    "start":         { "title": "Add WLED Device" },
+    "list_devices":  { "title": "Select your WLED device" },
+    "manual_entry":  { "title": "Enter IP manually" },
+    "add_devices":   { "title": "Adding device…" }
+  },
+  "settings": {
+    "num_leds":       "Number of LEDs",
+    "slide_speed_ms": "Slide speed (ms per LED)",
+    "firmware":       "WLED Firmware",
+    "ip_address":     "IP Address"
+  },
+  "errors": {
+    "offline":       "Device offline",
+    "connect":       "Could not connect to WLED device"
+  }
+}

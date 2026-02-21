@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline';">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      color: #1a1a1a;
+    }
+    h2  { font-size: 18px; font-weight: 600; }
+    p   { font-size: 14px; color: #555; line-height: 1.5; }
+    label { font-size: 14px; font-weight: 500; }
+    input {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 6px;
+      outline: none;
+    }
+    input:focus { border-color: #4A90D9; }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #4A90D9;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.5; cursor: default; }
+    .error  { font-size: 13px; color: #d9534f; display: none; }
+    .status { font-size: 13px; color: #555; min-height: 18px; }
+    .back   { font-size: 13px; color: #4A90D9; cursor: pointer; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h2>Enter IP Address</h2>
+  <p>Type the IP address of your WLED device.</p>
+
+  <label>
+    IP Address
+    <input type="text" id="ip" placeholder="192.168.107.27"
+      inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false">
+  </label>
+
+  <p class="error"  id="error"></p>
+  <p class="status" id="status"></p>
+
+  <button id="btn-connect">Connect</button>
+  <span class="back" id="btn-back">← Back to search</span>
+
+  <script type="application/javascript">
+    // In modern Homey SDK3, `Homey` is a direct global — no onHomeyReady wrapper.
+
+    var btn    = document.getElementById('btn-connect');
+    var ipEl   = document.getElementById('ip');
+    var errEl  = document.getElementById('error');
+    var statEl = document.getElementById('status');
+
+    function isValidIp(v) {
+      return /^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)$/.test(v);
+    }
+
+    function showError(msg) {
+      errEl.textContent   = msg;
+      errEl.style.display = 'block';
+      statEl.textContent  = '';
+      btn.disabled        = false;
+    }
+
+    btn.addEventListener('click', function() {
+      var ip = ipEl.value.trim();
+      errEl.style.display = 'none';
+
+      if (!isValidIp(ip)) {
+        showError('Enter a valid IPv4 address (e.g. 192.168.107.27).');
+        return;
+      }
+
+      btn.disabled       = true;
+      statEl.textContent = 'Connecting…';
+
+      Homey.emit('manual_pair', { ip: ip })
+        .then(function(device) {
+          statEl.textContent = 'Found: ' + (device && device.name ? device.name : ip) + ' — Adding…';
+          return Homey.createDevice(device);
+        })
+        .then(function() {
+          Homey.done();
+        })
+        .catch(function(err) {
+          showError((err && err.message) ? err.message : 'Could not connect. Check the IP and try again.');
+        });
+    });
+
+    document.getElementById('btn-back').addEventListener('click', function() {
+      Homey.showView('list_devices');
+    });
+  </script>
+</body>
+</html>

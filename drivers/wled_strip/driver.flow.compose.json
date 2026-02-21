@@ -1,0 +1,44 @@
+{
+  "triggers": [
+    {
+      "id": "slide_completed",
+      "title": { "en": "Sliding effect finished" },
+      "hint": { "en": "Fires when a slide animation completes on this device." },
+      "tokens": [
+        {
+          "name": "direction",
+          "type": "string",
+          "title": { "en": "Direction (on / off)" },
+          "example": "on"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "slide_on",
+      "title": { "en": "Slide ON" },
+      "hint": { "en": "LEDs fill one by one from start to end, then hold." }
+    },
+    {
+      "id": "slide_off",
+      "title": { "en": "Slide OFF" },
+      "hint": { "en": "LEDs clear one by one from end to start, then power off." }
+    },
+    {
+      "id": "set_slide_speed",
+      "title": { "en": "Set slide speed" },
+      "titleFormatted": { "en": "Set slide speed to [[speed]] ms per LED" },
+      "args": [
+        {
+          "name": "speed",
+          "type": "number",
+          "title": { "en": "Speed (ms per LED)" },
+          "min": 10,
+          "max": 500,
+          "step": 10
+        }
+      ]
+    }
+  ]
+}

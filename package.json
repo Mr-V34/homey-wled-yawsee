@@ -1,0 +1,9 @@
+{
+  "name": "com.wled.slideeffect",
+  "version": "1.0.0",
+  "description": "WLED Slide Effect for Homey Pro",
+  "main": "app.js",
+  "engines": { "node": ">=18.0.0" },
+  "scripts": {},
+  "dependencies": {}
+}
