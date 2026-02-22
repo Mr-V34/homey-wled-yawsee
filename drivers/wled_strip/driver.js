@@ -22,6 +22,13 @@ class WledStripDriver extends Homey.Driver {
         await device.slideOff();
       });
 
+    // ── Flow: Set slide direction ─────────────────────────────────────────
+    this.homey.flow.getActionCard('set_reverse')
+      .registerRunListener(async ({ device, direction }) => {
+        this.log(`[flow] set_reverse → ${device.getName()} = ${direction}`);
+        await device.setSettings({ reverse: direction === 'reverse' });
+      });
+
     // ── Flow: Set slide speed ─────────────────────────────────────────────
     this.homey.flow.getActionCard('set_slide_speed')
       .registerRunListener(async ({ device, speed }) => {

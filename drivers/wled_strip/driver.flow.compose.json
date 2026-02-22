@@ -26,6 +26,22 @@
       "hint": { "en": "LEDs clear one by one from end to start, then power off." }
     },
     {
+      "id": "set_reverse",
+      "title": { "en": "Set slide direction" },
+      "titleFormatted": { "en": "Set slide direction to [[direction]]" },
+      "args": [
+        {
+          "name": "direction",
+          "type": "dropdown",
+          "title": { "en": "Direction" },
+          "values": [
+            { "id": "forward", "label": { "en": "Forward (→ left to right)" } },
+            { "id": "reverse", "label": { "en": "Reverse (← right to left)" } }
+          ]
+        }
+      ]
+    },
+    {
       "id": "set_slide_speed",
       "title": { "en": "Set slide speed" },
       "titleFormatted": { "en": "Set slide speed to [[speed]] ms per LED" },
