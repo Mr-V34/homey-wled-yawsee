@@ -8,6 +8,7 @@
   "settings": {
     "num_leds":       "Number of LEDs",
     "slide_speed_ms": "Slide speed (ms per LED)",
+    "reverse":        "Reverse direction",
     "firmware":       "WLED Firmware",
     "ip_address":     "IP Address"
   },

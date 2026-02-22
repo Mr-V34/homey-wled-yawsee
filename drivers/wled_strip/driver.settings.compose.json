@@ -18,6 +18,13 @@
     "hint": { "en": "50 ms × 20 LEDs = 1 second total animation." }
   },
   {
+    "id": "reverse",
+    "type": "checkbox",
+    "label": { "en": "Reverse direction" },
+    "value": false,
+    "hint": { "en": "When enabled, slide animations run right to left instead of left to right." }
+  },
+  {
     "id": "firmware",
     "type": "label",
     "label": { "en": "WLED Firmware" },

@@ -173,45 +173,61 @@ class WledStripDevice extends Homey.Device {
   // No WLED transition timing tricks are needed — the effect is purely geometric.
 
   async slideOn() {
-    // M-04: increment generation — any in-progress animation will detect the change and stop
     const gen = ++this._slideGen;
     this._animating = true;
-    this.log('slideOn: starting');
+    const reverse = this.getSetting('reverse') || false;
+    this.log(`slideOn: starting (${reverse ? 'reverse' : 'forward'})`);
 
     const { leds, speed, color } = this._effectParams();
     const tailColor = color.map(c => Math.round(c * TAIL_BRIGHTNESS));
+    const bri = Math.round((this.getCapabilityValue('dim') ?? 1) * 255);
 
     try {
-      // Light the first LED and clear any leftover tail segment from a previous animation
-      await this._wledPost({
-        on: true,
-        bri: Math.round((this.getCapabilityValue('dim') ?? 1) * 255),
-        transition: 0,
-        seg: [
-          { id: 0, start: 0, stop: 1, col: [color, [0,0,0], [0,0,0]], fx: 0 },
-          { id: 1, start: 0, stop: 0 },
-        ],
-      });
-
-      for (let i = 2; i <= leds; i++) {
-        if (this._slideGen !== gen) {
-          this.log('slideOn: superseded by newer animation');
-          return;
-        }
-        // Body grows to i LEDs; dim head-glow sits one step ahead as a leading edge
-        const tailStart = i;
-        const tailStop  = Math.min(leds, i + 1);
+      if (!reverse) {
+        // ── Forward: expand stop left → right ────────────────────────────
         await this._wledPost({
-          transition: 0,
+          on: true, bri, transition: 0,
           seg: [
-            { id: 0, stop: i },
-            { id: 1, start: tailStart, stop: tailStop, col: [tailColor, [0,0,0], [0,0,0]], fx: 0 },
+            { id: 0, start: 0, stop: 1, col: [color, [0,0,0], [0,0,0]], fx: 0 },
+            { id: 1, start: 0, stop: 0 },
           ],
         });
-        await this._sleep(speed);
+        for (let i = 2; i <= leds; i++) {
+          if (this._slideGen !== gen) { this.log('slideOn: superseded'); return; }
+          await this._wledPost({
+            transition: 0,
+            seg: [
+              { id: 0, stop: i },
+              { id: 1, start: i, stop: Math.min(leds, i + 1), col: [tailColor, [0,0,0], [0,0,0]], fx: 0 },
+            ],
+          });
+          await this._sleep(speed);
+        }
+      } else {
+        // ── Reverse: expand start right → left ───────────────────────────
+        await this._wledPost({
+          on: true, bri, transition: 0,
+          seg: [
+            { id: 0, start: leds - 1, stop: leds, col: [color, [0,0,0], [0,0,0]], fx: 0 },
+            { id: 1, start: 0, stop: 0 },
+          ],
+        });
+        for (let start = leds - 2; start >= 0; start--) {
+          if (this._slideGen !== gen) { this.log('slideOn: superseded'); return; }
+          const tStart = start - 1; const tStop = start;
+          await this._wledPost({
+            transition: 0,
+            seg: [
+              { id: 0, start },
+              tStop > tStart
+                ? { id: 1, start: tStart, stop: tStop, col: [tailColor, [0,0,0], [0,0,0]], fx: 0 }
+                : { id: 1, start: 0, stop: 0 },
+            ],
+          });
+          await this._sleep(speed);
+        }
       }
 
-      // Body covers full strip — clear the tail segment
       if (this._slideGen !== gen) return;
       await this._wledPost({ transition: 0, seg: [{ id: 1, start: 0, stop: 0 }] });
       await this.setCapabilityValue('onoff', true).catch(this.error);
@@ -219,7 +235,7 @@ class WledStripDevice extends Homey.Device {
       await this._slideDoneTrigger.trigger(this, { direction: 'on' }, {});
 
     } catch (err) {
-      if (this._slideGen !== gen) return; // stale — newer animation owns the strip
+      if (this._slideGen !== gen) return;
       this.error('slideOn failed:', err.message);
       await this.setUnavailable(err.message);
     } finally {
@@ -228,43 +244,53 @@ class WledStripDevice extends Homey.Device {
   }
 
   async slideOff() {
-    // M-04: increment generation — any in-progress animation will detect the change and stop
     const gen = ++this._slideGen;
     this._animating = true;
-    this.log('slideOff: starting');
+    const reverse = this.getSetting('reverse') || false;
+    this.log(`slideOff: starting (${reverse ? 'reverse' : 'forward'})`);
 
     const { leds, speed, color } = this._effectParams();
     const tailColor = color.map(c => Math.round(c * TAIL_BRIGHTNESS));
+    const bri = Math.round((this.getCapabilityValue('dim') ?? 1) * 255);
 
     try {
-      // Show full strip and clear any leftover tail segment
+      // Both directions start from a full lit strip
       await this._wledPost({
-        on: true,
-        bri: Math.round((this.getCapabilityValue('dim') ?? 1) * 255),
-        transition: 0,
+        on: true, bri, transition: 0,
         seg: [
           { id: 0, start: 0, stop: leds, col: [color, [0,0,0], [0,0,0]], fx: 0 },
           { id: 1, start: 0, stop: 0 },
         ],
       });
 
-      for (let i = leds - 1; i >= 1; i--) {
-        if (this._slideGen !== gen) {
-          this.log('slideOff: superseded by newer animation');
-          return;
+      if (!reverse) {
+        // ── Forward: shrink stop right → left ────────────────────────────
+        for (let i = leds - 1; i >= 1; i--) {
+          if (this._slideGen !== gen) { this.log('slideOff: superseded'); return; }
+          await this._wledPost({
+            transition: 0,
+            seg: [
+              { id: 0, stop: i },
+              { id: 1, start: i, stop: i + 1, col: [tailColor, [0,0,0], [0,0,0]], fx: 0 },
+            ],
+          });
+          await this._sleep(speed);
         }
-        // Body shrinks to i LEDs; dim tail-glow sits one step behind as a trailing echo
-        await this._wledPost({
-          transition: 0,
-          seg: [
-            { id: 0, stop: i },
-            { id: 1, start: i, stop: i + 1, col: [tailColor, [0,0,0], [0,0,0]], fx: 0 },
-          ],
-        });
-        await this._sleep(speed);
+      } else {
+        // ── Reverse: grow start left → right ─────────────────────────────
+        for (let start = 1; start < leds; start++) {
+          if (this._slideGen !== gen) { this.log('slideOff: superseded'); return; }
+          await this._wledPost({
+            transition: 0,
+            seg: [
+              { id: 0, start },
+              { id: 1, start: start - 1, stop: start, col: [tailColor, [0,0,0], [0,0,0]], fx: 0 },
+            ],
+          });
+          await this._sleep(speed);
+        }
       }
 
-      // Turn strip off and clear tail segment
       if (this._slideGen !== gen) return;
       await this._wledPost({ on: false, seg: [{ id: 1, start: 0, stop: 0 }] });
       await this.setCapabilityValue('onoff', false).catch(this.error);
@@ -272,7 +298,7 @@ class WledStripDevice extends Homey.Device {
       await this._slideDoneTrigger.trigger(this, { direction: 'off' }, {});
 
     } catch (err) {
-      if (this._slideGen !== gen) return; // stale — newer animation owns the strip
+      if (this._slideGen !== gen) return;
       this.error('slideOff failed:', err.message);
       await this.setUnavailable(err.message);
     } finally {
