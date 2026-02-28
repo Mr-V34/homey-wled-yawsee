@@ -1,5 +1,8 @@
 {
   "2.0.0": {
-    "en": " YAWSEE v2.0.0 - The Sliding Effect!"
+    "en": "Initial release with the Sliding Effect! Features cinematic on/off animations, robust JSON API communication, and automatic mDNS discovery."
+  },
+  "2.1.0": {
+    "en": "Added 'Reverse direction' setting and Flow card support. Improved input validation and error handling for better stability."
   }
 }

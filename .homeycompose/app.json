@@ -1,6 +1,6 @@
 {
   "id": "com.wled.slideeffect",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "platforms": [
@@ -10,7 +10,7 @@
     "en": "YAWSEE"
   },
   "description": {
-    "en": "Yet Another WLED Slide & Exit Effect — sliding on/off animations for WLED LED strips."
+    "en": "Sliding on/off animations for WLED LED strips."
   },
   "tags": {
     "en": [
