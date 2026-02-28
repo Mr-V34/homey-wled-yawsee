@@ -8,7 +8,7 @@
         {
           "name": "direction",
           "type": "string",
-          "title": { "en": "Direction (on / off)" },
+          "title": { "en": "Slide direction" },
           "example": "on"
         }
       ]
@@ -35,8 +35,8 @@
           "type": "dropdown",
           "title": { "en": "Direction" },
           "values": [
-            { "id": "forward", "label": { "en": "Forward (→ left to right)" } },
-            { "id": "reverse", "label": { "en": "Reverse (← right to left)" } }
+            { "id": "forward", "label": { "en": "Left to right" } },
+            { "id": "reverse", "label": { "en": "Right to left" } }
           ]
         }
       ]

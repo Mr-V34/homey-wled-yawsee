@@ -2,53 +2,166 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:;">
   <style>
+    :root {
+      --accent:        #4A90D9;
+      --accent-light:  #e8f2fb;
+      --card-bg:       #f5f5f5;
+      --card-border:   #e0e0e0;
+      --text-primary:  #1a1a1a;
+      --text-secondary:#666666;
+      --radius:        12px;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      padding: 24px;
-      color: #1a1a1a;
+      padding: 20px;
+      color: var(--text-primary);
+      background: #ffffff;
     }
-    h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
 
-    .device {
+    h2 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    /* ── Device grid ───────────────────────────────── */
+    #list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .device-tile {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 14px 10px 12px;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .device-tile:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .device-tile.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .device-tile.adding {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* Checkmark badge (shown when selected) */
+    .tile-check {
+      display: none;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 22px;
+      height: 22px;
+      background: var(--accent);
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+    }
+    .device-tile.selected .tile-check {
+      display: flex;
+    }
+    .tile-check svg {
+      width: 12px;
+      height: 12px;
+      stroke: #ffffff;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Icon area */
+    .tile-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--accent);
+      border-radius: 14px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 14px 12px;
-      border: 1px solid #e0e0e0;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: background 0.15s;
+      justify-content: center;
+      padding: 8px;
+      flex-shrink: 0;
     }
-    .device:hover  { background: #f0f6ff; border-color: #4A90D9; }
-    .device-icon   { width: 36px; height: 36px; background: #4A90D9; border-radius: 8px; flex-shrink: 0; }
-    .device-name   { font-size: 15px; font-weight: 500; }
-    .device-ip     { font-size: 12px; color: #888; margin-top: 2px; }
-    .device.adding { opacity: 0.5; pointer-events: none; }
+    .tile-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
 
-    .spinner {
-      text-align: center;
-      padding: 32px 0;
-      color: #888;
-      font-size: 14px;
-    }
-    .empty {
-      font-size: 14px;
-      color: #888;
-      padding: 16px 0;
-    }
-    .error-msg {
+    /* Text */
+    .tile-name {
       font-size: 13px;
-      color: #d9534f;
-      padding: 8px 0;
+      font-weight: 600;
+      text-align: center;
+      word-break: break-word;
+      color: var(--text-primary);
     }
-    .manual-link {
-      display: inline-block;
+    .tile-ip {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    /* ── States ────────────────────────────────────── */
+    .spinner, .empty, .error-msg {
+      grid-column: 1 / -1;
+      padding: 28px 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    .error-msg { color: #d9534f; padding: 10px 0; }
+
+    /* ── Bottom action area ────────────────────────── */
+    .actions {
       margin-top: 20px;
-      color: #4A90D9;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-connect {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-connect:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .btn-connect:not(:disabled):hover {
+      opacity: 0.88;
+    }
+
+    .manual-link {
+      text-align: center;
+      color: var(--accent);
       font-size: 13px;
       cursor: pointer;
       text-decoration: underline;
@@ -56,73 +169,81 @@
   </style>
 </head>
 <body>
-  <h2>YAWSEE — Select Device</h2>
+  <h2>Select WLED Device</h2>
   <div id="list"><p class="spinner">Searching network…</p></div>
-  <span class="manual-link" id="manual-link">Can't find your device? Enter IP manually.</span>
+
+  <div class="actions">
+    <button class="btn-connect" id="btn-connect" disabled>Connect</button>
+    <span class="manual-link" id="manual-link">Can't find your device? Enter IP manually.</span>
+  </div>
 
   <script type="application/javascript">
-    // In modern Homey SDK3, `Homey` is a direct global — no onHomeyReady wrapper.
+    var listEl      = document.getElementById('list');
+    var btnConnect  = document.getElementById('btn-connect');
+    var selectedDev = null;
 
     function _safe(str) {
       return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
-    var listEl = document.getElementById('list');
-
-    document.getElementById('manual-link').addEventListener('click', function() {
+    document.getElementById('manual-link').addEventListener('click', function () {
       Homey.showView('manual_entry');
     });
 
+    btnConnect.addEventListener('click', function () {
+      if (!selectedDev) return;
+      var tile = listEl.querySelector('.device-tile.selected');
+      if (tile) { tile.classList.add('adding'); tile.querySelector('.tile-name').textContent += ' — Connecting…'; }
+      btnConnect.disabled = true;
+
+      Homey.createDevice(selectedDev)
+        .then(function () { Homey.done(); })
+        .catch(function (err) {
+          if (tile) { tile.classList.remove('adding'); tile.querySelector('.tile-name').textContent = selectedDev.name; }
+          btnConnect.disabled = false;
+          var existing = listEl.querySelector('.error-msg');
+          if (existing) existing.remove();
+          listEl.insertAdjacentHTML('beforeend',
+            '<p class="error-msg">Error: ' + _safe(err && err.message ? err.message : String(err)) + '</p>');
+        });
+    });
+
     Homey.emit('get_devices', {})
-      .then(function(devices) {
+      .then(function (devices) {
         listEl.innerHTML = '';
 
         if (!devices || devices.length === 0) {
-          listEl.innerHTML = '<p class="empty">No WLED devices found on the network.<br>Use the link below to add one manually.</p>';
+          listEl.innerHTML = '<p class="empty">No WLED devices found.<br>Use the link below to add one manually.</p>';
           return;
         }
 
-        devices.forEach(function(device) {
-          var el = document.createElement('div');
-          el.className = 'device';
-          el.innerHTML =
-            '<div class="device-icon"></div>' +
-            '<div>' +
-              '<div class="device-name">' + _safe(device.name) + '</div>' +
-              '<div class="device-ip">' + _safe(device.store && device.store.address ? device.store.address : '') + '</div>' +
-            '</div>';
+        devices.forEach(function (device) {
+          var tile = document.createElement('div');
+          tile.className = 'device-tile';
+          tile.innerHTML =
+            '<div class="tile-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>' +
+            '<div class="tile-icon"><img src="../assets/icon.svg" alt="" /></div>' +
+            '<div class="tile-name">' + _safe(device.name) + '</div>' +
+            '<div class="tile-ip">'  + _safe(device.store && device.store.address ? device.store.address : '') + '</div>';
 
-          el.addEventListener('click', function() {
-            el.classList.add('adding');
-            el.querySelector('.device-name').textContent += ' — Adding…';
-
-            Homey.createDevice(device)
-              .then(function() {
-                Homey.done();
-              })
-              .catch(function(err) {
-                el.classList.remove('adding');
-                el.querySelector('.device-name').textContent = device.name;
-                listEl.insertAdjacentHTML(
-                  'beforeend',
-                  '<p class="error-msg">Error: ' + _safe(err && err.message ? err.message : String(err)) + '</p>'
-                );
-              });
+          tile.addEventListener('click', function () {
+            // Deselect any previously selected tile
+            listEl.querySelectorAll('.device-tile.selected').forEach(function (t) {
+              t.classList.remove('selected');
+            });
+            tile.classList.add('selected');
+            selectedDev = device;
+            btnConnect.disabled = false;
           });
 
-          listEl.appendChild(el);
+          listEl.appendChild(tile);
         });
       })
-      .catch(function(err) {
+      .catch(function (err) {
         listEl.innerHTML =
-          '<p class="error-msg">Search failed: ' +
-          _safe(err && err.message ? err.message : String(err)) +
-          '</p>' +
+          '<p class="error-msg">Search failed: ' + _safe(err && err.message ? err.message : String(err)) + '</p>' +
           '<p class="empty">Use the link below to add manually.</p>';
       });
   </script>
