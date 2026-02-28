@@ -4,5 +4,8 @@
   },
   "2.1.0": {
     "en": "Added 'Reverse direction' setting and Flow card support. Improved input validation and error handling for better stability."
+  },
+  "2.2.0": {
+    "en": "Improved pairing experience — discovered WLED devices are now shown as selectable tiles with a Connect button. New cleaner icons that display correctly on all backgrounds. Improved Flow card labels."
   }
 }
