@@ -101,9 +101,9 @@
             "en": "Speed (ms per LED)",
             "sv": "Hastighet (ms per lysdiod)"
           },
-          "min": 10,
+          "min": 0,
           "max": 500,
-          "step": 10
+          "step": 5
         }
       ]
     }

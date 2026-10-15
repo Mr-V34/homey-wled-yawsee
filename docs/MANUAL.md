@@ -15,6 +15,11 @@ JSON API. No cloud account is needed. When the strip turns on or off, the LEDs
 light up (or go dark) one by one, with a dimmer LED at the moving edge. Turning the
 device on or off in Homey, or using the Slide flow cards, runs the animation.
 
+The animation frames are sent to WLED as UDP realtime packets, which is much faster
+than one web request per LED. If UDP realtime is turned off in WLED, the app falls
+back to the slower JSON API by itself. Switching the strip on or off while it is still
+sliding turns the animation around from where it is.
+
 ### Adding a device
 
 1. Make sure the WLED controller is on the same network as Homey.
@@ -41,7 +46,7 @@ changes made in the WLED app show up in Homey.
 | Setting | Default | Meaning |
 |---|---|---|
 | **Number of LEDs** | from WLED | Must match the real number of LEDs on the strip (1–1024). |
-| **Slide speed (ms per LED)** | 50 | Time per LED step (10–500). 50 ms × 20 LEDs = 1 second. |
+| **Slide speed (ms per LED)** | 25 | Time per LED step (0–500). 0 = as fast as possible. 25 ms × 40 LEDs = 1 second. |
 | **Reverse direction** | off | Run the animation right to left instead of left to right. |
 | **WLED Firmware** | — | The WLED version (read only). |
 | **IP Address** | — | The address of the device (read only). |
@@ -53,7 +58,7 @@ changes made in the WLED app show up in Homey.
 | Action | **Slide ON** | LEDs light up one by one from start to end, then stay on. |
 | Action | **Slide OFF** | LEDs go dark one by one from end to start, then the strip turns off. |
 | Action | **Set slide direction** | Left to right, or right to left. |
-| Action | **Set slide speed** | Milliseconds per LED (10–500). |
+| Action | **Set slide speed** | Milliseconds per LED (0–500). |
 | Trigger | **Sliding effect finished** | Runs when an animation is done. Token: *direction* (`on`/`off`). |
 
 ### Troubleshooting
@@ -62,6 +67,8 @@ changes made in the WLED app show up in Homey.
   network, or add it by IP address.
 - **Device shows as unavailable:** Homey could not reach WLED. Check power and Wi-Fi.
   It becomes available again by itself once WLED answers.
+- **Animation is slow:** in WLED, open *Config → Sync Interfaces* and check that
+  *Receive UDP realtime* is on. Restart the YAWSEE app afterwards.
 - **Animation does not cover the whole strip:** check that *Number of LEDs* matches your strip.
 
 ---
@@ -74,6 +81,11 @@ YAWSEE pratar direkt med din WLED-styrenhet över det lokala nätverket via WLED
 JSON-API. Inget molnkonto behövs. När slingan tänds eller släcks gör lysdioderna det
 en i taget, med en svagare lysdiod i den rörliga kanten. Animationen körs när du slår
 på eller av enheten i Homey, eller när du använder Flow-korten för glidning.
+
+Animationen skickas till WLED som UDP-realtidspaket, vilket går mycket snabbare än en
+webbförfrågan per lysdiod. Om UDP-realtid är avstängt i WLED använder appen
+automatiskt det långsammare JSON-API:et. Slår du på eller av slingan medan den glider
+vänder animationen där den är.
 
 ### Lägga till en enhet
 
@@ -101,7 +113,7 @@ Homey läser av på/av-läge och ljusstyrka från WLED-enheten var 30:e sekund, 
 | Inställning | Standard | Betydelse |
 |---|---|---|
 | **Antal lysdioder** | från WLED | Måste stämma med antalet lysdioder på slingan (1–1024). |
-| **Glidhastighet (ms per lysdiod)** | 50 | Tid per lysdiod (10–500). 50 ms × 20 lysdioder = 1 sekund. |
+| **Glidhastighet (ms per lysdiod)** | 25 | Tid per lysdiod (0–500). 0 = så snabbt som möjligt. 25 ms × 40 lysdioder = 1 sekund. |
 | **Omvänd riktning** | av | Kör animationen från höger till vänster i stället för vänster till höger. |
 | **WLED-firmware** | — | WLED-versionen (visas bara). |
 | **IP-adress** | — | Enhetens adress (visas bara). |
@@ -113,7 +125,7 @@ Homey läser av på/av-läge och ljusstyrka från WLED-enheten var 30:e sekund, 
 | Åtgärd | **Glid PÅ** | Lysdioderna tänds en i taget från början till slut och lyser sedan kvar. |
 | Åtgärd | **Glid AV** | Lysdioderna släcks en i taget från slut till början, sedan stängs slingan av. |
 | Åtgärd | **Ställ in glidriktning** | Vänster till höger, eller höger till vänster. |
-| Åtgärd | **Ställ in glidhastighet** | Millisekunder per lysdiod (10–500). |
+| Åtgärd | **Ställ in glidhastighet** | Millisekunder per lysdiod (0–500). |
 | Utlösare | **Glideffekten är klar** | Körs när en animation är klar. Token: *Glidriktning* (`on`/`off`). |
 
 ### Felsökning
@@ -122,4 +134,6 @@ Homey läser av på/av-läge och ljusstyrka från WLED-enheten var 30:e sekund, 
   samma nätverk, eller lägg till den via IP-adress.
 - **Enheten visas som otillgänglig:** Homey når inte WLED. Kontrollera ström och wifi.
   Den blir tillgänglig igen av sig själv när WLED svarar.
+- **Animationen går långsamt:** öppna *Config → Sync Interfaces* i WLED och kontrollera
+  att *Receive UDP realtime* är på. Starta sedan om YAWSEE-appen.
 - **Animationen täcker inte hela slingan:** kontrollera att *Antal lysdioder* stämmer med slingan.

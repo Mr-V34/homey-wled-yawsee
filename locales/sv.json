@@ -36,7 +36,7 @@
     "firmware":       "WLED-firmware",
     "ip_address":     "IP-adress",
     "num_leds_range": "Antal lysdioder måste vara mellan 1 och 1024 (angivet: __value__)",
-    "speed_range":    "Glidhastigheten måste vara 10–500 ms"
+    "speed_range":    "Glidhastigheten måste vara 0–500 ms"
   },
   "flow": {
     "invalid_speed":  "Ogiltigt hastighetsvärde: __value__"

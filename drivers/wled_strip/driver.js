@@ -34,7 +34,7 @@ class WledStripDriver extends Homey.Driver {
       .registerRunListener(async ({ device, speed }) => {
         const n = Number(speed);
         if (!Number.isFinite(n)) throw new Error(this.homey.__('flow.invalid_speed', { value: speed }));
-        const clamped = Math.max(10, Math.min(500, Math.round(n)));
+        const clamped = Math.max(0, Math.min(500, Math.round(n)));
         this.log(`[flow] set_slide_speed → ${device.getName()} = ${clamped} ms`);
         await device.setSettings({ slide_speed_ms: clamped });
       });
@@ -98,7 +98,7 @@ class WledStripDriver extends Homey.Driver {
       },
       settings: {
         num_leds:     Math.max(1, Math.min(1024, Number(info.leds?.count) || 20)),
-        slide_speed_ms: 50,
+        slide_speed_ms: 25,
         transition_ms:  0,
         firmware:      String(info.ver ?? 'unknown').slice(0, 32).replace(/[<>&"']/g, ''),
         ip_address:    ip,

@@ -1,6 +1,6 @@
 {
   "name": "com.wled.slideeffect",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "WLED Slide Effect for Homey Pro",
   "main": "app.js",
   "author": "Peter Persson (Mr-V34) <info@v34.com>",

@@ -36,7 +36,7 @@
     "firmware":       "WLED Firmware",
     "ip_address":     "IP Address",
     "num_leds_range": "Number of LEDs must be between 1 and 1024 (got __value__)",
-    "speed_range":    "Slide speed must be 10–500 ms"
+    "speed_range":    "Slide speed must be 0–500 ms"
   },
   "flow": {
     "invalid_speed":  "Invalid speed value: __value__"
