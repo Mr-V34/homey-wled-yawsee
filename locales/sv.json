@@ -1,0 +1,49 @@
+{
+  "pair": {
+    "start":         { "title": "Lägg till WLED-enhet" },
+    "list_devices":  {
+      "title":        "Välj din WLED-enhet",
+      "heading":      "Välj WLED-enhet",
+      "searching":    "Söker i nätverket…",
+      "connect":      "Anslut",
+      "connecting":   "Ansluter…",
+      "manual_link":  "Hittar du inte enheten? Ange IP-adressen manuellt.",
+      "none_found":   "Inga WLED-enheter hittades.",
+      "none_hint":    "Använd länken nedan för att lägga till en manuellt.",
+      "search_failed":"Sökningen misslyckades:",
+      "manual_hint":  "Använd länken nedan för att lägga till manuellt.",
+      "error":        "Fel:"
+    },
+    "manual_entry":  {
+      "title":        "Ange IP-adress manuellt",
+      "heading":      "Ange IP-adress",
+      "intro":        "Skriv in IP-adressen till din WLED-enhet.",
+      "ip_label":     "IP-adress",
+      "connect":      "Anslut",
+      "back":         "← Tillbaka till sökningen",
+      "invalid_ip":   "Ange en giltig IPv4-adress (t.ex. 192.168.1.50).",
+      "connecting":   "Ansluter…",
+      "found":        "Hittade:",
+      "adding":       "Lägger till…",
+      "failed":       "Kunde inte ansluta. Kontrollera IP-adressen och försök igen."
+    },
+    "add_devices":   { "title": "Lägger till enhet…" }
+  },
+  "settings": {
+    "num_leds":       "Antal lysdioder",
+    "slide_speed_ms": "Glidhastighet (ms per lysdiod)",
+    "reverse":        "Omvänd riktning",
+    "firmware":       "WLED-firmware",
+    "ip_address":     "IP-adress",
+    "num_leds_range": "Antal lysdioder måste vara mellan 1 och 1024 (angivet: __value__)",
+    "speed_range":    "Glidhastigheten måste vara 0–500 ms"
+  },
+  "flow": {
+    "invalid_speed":  "Ogiltigt hastighetsvärde: __value__"
+  },
+  "errors": {
+    "offline":       "Enheten är offline",
+    "offline_reason":"Offline: __reason__",
+    "connect":       "Kunde inte ansluta till WLED-enheten"
+  }
+}

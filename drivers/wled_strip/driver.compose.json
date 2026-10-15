@@ -1,5 +1,8 @@
 {
-  "name": { "en": "WLED Strip" },
+  "name": {
+    "en": "WLED Strip",
+    "sv": "WLED-slinga"
+  },
   "class": "light",
   "capabilities": [
     "onoff",
@@ -10,25 +13,45 @@
     "light_mode"
   ],
   "capabilitiesOptions": {
-    "dim": { "title": { "en": "Brightness" } },
-    "light_temperature": { "title": { "en": "Warm / Cool" } }
+    "dim": {
+      "title": {
+        "en": "Brightness",
+        "sv": "Ljusstyrka"
+      }
+    },
+    "light_temperature": {
+      "title": {
+        "en": "Warm / Cool",
+        "sv": "Varm / Kall"
+      }
+    }
   },
-  "platforms": ["local"],
-  "connectivity": ["lan"],
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "lan"
+  ],
   "discovery": "wled",
   "pair": [
     {
       "id": "list_devices",
-      "title": { "en": "Select WLED Device" }
+      "title": {
+        "en": "Select WLED Device",
+        "sv": "Välj WLED-enhet"
+      }
     },
     {
       "id": "manual_entry",
-      "title": { "en": "Enter IP Address" }
+      "title": {
+        "en": "Enter IP Address",
+        "sv": "Ange IP-adress"
+      }
     }
   ],
   "images": {
-    "small":  "/drivers/wled_strip/assets/images/small.png",
-    "large":  "/drivers/wled_strip/assets/images/large.png",
+    "small": "/drivers/wled_strip/assets/images/small.png",
+    "large": "/drivers/wled_strip/assets/images/large.png",
     "xlarge": "/drivers/wled_strip/assets/images/xlarge.png"
   }
 }

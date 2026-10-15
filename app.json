@@ -1,17 +1,19 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.wled.slideeffect",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "platforms": [
     "local"
   ],
   "name": {
-    "en": "YAWSEE"
+    "en": "YAWSEE",
+    "sv": "YAWSEE"
   },
   "description": {
-    "en": "Sliding on/off animations for WLED LED strips."
+    "en": "Sliding on/off animations for WLED LED strips.",
+    "sv": "Glidande på/av-animationer för WLED LED-slingor."
   },
   "tags": {
     "en": [
@@ -20,39 +22,59 @@
       "esp32",
       "neopixel",
       "addressable"
+    ],
+    "sv": [
+      "wled",
+      "led",
+      "esp32",
+      "neopixel",
+      "ledslinga",
+      "adresserbar"
     ]
   },
   "category": "lights",
-  "brandColor": "#4A90D9",
+  "brandColor": "#E05000",
   "images": {
     "small": "/assets/images/small.png",
     "large": "/assets/images/large.png",
     "xlarge": "/assets/images/xlarge.png"
   },
   "author": {
-    "name": "Mr-V34",
+    "name": "Peter Persson (Mr-V34)",
     "email": "info@v34.com"
+  },
+  "contributors": {
+    "developers": [
+      {
+        "name": "B.Frank"
+      }
+    ]
   },
   "bugs": {
     "url": "https://github.com/Mr-V34/homey-wled-yawsee/issues"
   },
+  "homepage": "https://github.com/Mr-V34/homey-wled-yawsee/blob/main/docs/MANUAL.md",
+  "support": "mailto:info@v34.com",
   "source": "https://github.com/Mr-V34/homey-wled-yawsee",
   "flow": {
     "triggers": [
       {
         "id": "slide_completed",
         "title": {
-          "en": "Sliding effect finished"
+          "en": "Sliding effect finished",
+          "sv": "Glideffekten är klar"
         },
         "hint": {
-          "en": "Fires when a slide animation completes on this device."
+          "en": "Fires when a slide animation completes on this device.",
+          "sv": "Körs när en glidanimation är klar på den här enheten."
         },
         "tokens": [
           {
             "name": "direction",
             "type": "string",
             "title": {
-              "en": "Slide direction"
+              "en": "Slide direction",
+              "sv": "Glidriktning"
             },
             "example": "on"
           }
@@ -70,10 +92,12 @@
       {
         "id": "slide_on",
         "title": {
-          "en": "Slide ON"
+          "en": "Slide ON",
+          "sv": "Glid PÅ"
         },
         "hint": {
-          "en": "LEDs fill one by one from start to end, then hold."
+          "en": "LEDs fill one by one from start to end, then hold.",
+          "sv": "Lysdioderna tänds en i taget från början till slut och lyser sedan kvar."
         },
         "args": [
           {
@@ -86,10 +110,12 @@
       {
         "id": "slide_off",
         "title": {
-          "en": "Slide OFF"
+          "en": "Slide OFF",
+          "sv": "Glid AV"
         },
         "hint": {
-          "en": "LEDs clear one by one from end to start, then power off."
+          "en": "LEDs clear one by one from end to start, then power off.",
+          "sv": "Lysdioderna släcks en i taget från slut till början, sedan stängs slingan av."
         },
         "args": [
           {
@@ -102,10 +128,12 @@
       {
         "id": "set_reverse",
         "title": {
-          "en": "Set slide direction"
+          "en": "Set slide direction",
+          "sv": "Ställ in glidriktning"
         },
         "titleFormatted": {
-          "en": "Set slide direction to [[direction]]"
+          "en": "Set slide direction to [[direction]]",
+          "sv": "Ställ in glidriktning till [[direction]]"
         },
         "args": [
           {
@@ -117,19 +145,22 @@
             "name": "direction",
             "type": "dropdown",
             "title": {
-              "en": "Direction"
+              "en": "Direction",
+              "sv": "Riktning"
             },
             "values": [
               {
                 "id": "forward",
                 "label": {
-                  "en": "Left to right"
+                  "en": "Left to right",
+                  "sv": "Vänster till höger"
                 }
               },
               {
                 "id": "reverse",
                 "label": {
-                  "en": "Right to left"
+                  "en": "Right to left",
+                  "sv": "Höger till vänster"
                 }
               }
             ]
@@ -139,10 +170,12 @@
       {
         "id": "set_slide_speed",
         "title": {
-          "en": "Set slide speed"
+          "en": "Set slide speed",
+          "sv": "Ställ in glidhastighet"
         },
         "titleFormatted": {
-          "en": "Set slide speed to [[speed]] ms per LED"
+          "en": "Set slide speed to [[speed]] ms per LED",
+          "sv": "Ställ in glidhastighet till [[speed]] ms per lysdiod"
         },
         "args": [
           {
@@ -154,11 +187,12 @@
             "name": "speed",
             "type": "number",
             "title": {
-              "en": "Speed (ms per LED)"
+              "en": "Speed (ms per LED)",
+              "sv": "Hastighet (ms per lysdiod)"
             },
-            "min": 10,
+            "min": 0,
             "max": 500,
-            "step": 10
+            "step": 5
           }
         ]
       }
@@ -167,7 +201,8 @@
   "drivers": [
     {
       "name": {
-        "en": "WLED Strip"
+        "en": "WLED Strip",
+        "sv": "WLED-slinga"
       },
       "class": "light",
       "capabilities": [
@@ -181,12 +216,14 @@
       "capabilitiesOptions": {
         "dim": {
           "title": {
-            "en": "Brightness"
+            "en": "Brightness",
+            "sv": "Ljusstyrka"
           }
         },
         "light_temperature": {
           "title": {
-            "en": "Warm / Cool"
+            "en": "Warm / Cool",
+            "sv": "Varm / Kall"
           }
         }
       },
@@ -201,13 +238,15 @@
         {
           "id": "list_devices",
           "title": {
-            "en": "Select WLED Device"
+            "en": "Select WLED Device",
+            "sv": "Välj WLED-enhet"
           }
         },
         {
           "id": "manual_entry",
           "title": {
-            "en": "Enter IP Address"
+            "en": "Enter IP Address",
+            "sv": "Ange IP-adress"
           }
         }
       ],
@@ -222,44 +261,51 @@
           "id": "num_leds",
           "type": "number",
           "label": {
-            "en": "Number of LEDs"
+            "en": "Number of LEDs",
+            "sv": "Antal lysdioder"
           },
           "value": 20,
           "min": 1,
           "max": 1024,
           "hint": {
-            "en": "Must match your physical LED count."
+            "en": "Must match your physical LED count.",
+            "sv": "Måste stämma med antalet lysdioder på slingan."
           }
         },
         {
           "id": "slide_speed_ms",
           "type": "number",
           "label": {
-            "en": "Slide speed (ms per LED)"
+            "en": "Slide speed (ms per LED)",
+            "sv": "Glidhastighet (ms per lysdiod)"
           },
-          "value": 50,
-          "min": 10,
+          "value": 25,
+          "min": 0,
           "max": 500,
           "hint": {
-            "en": "50 ms × 20 LEDs = 1 second total animation."
+            "en": "Time per LED step. 0 = as fast as possible. 25 ms × 40 LEDs = 1 second.",
+            "sv": "Tid per lysdiodssteg. 0 = så snabbt som möjligt. 25 ms × 40 lysdioder = 1 sekund."
           }
         },
         {
           "id": "reverse",
           "type": "checkbox",
           "label": {
-            "en": "Reverse direction"
+            "en": "Reverse direction",
+            "sv": "Omvänd riktning"
           },
           "value": false,
           "hint": {
-            "en": "When enabled, slide animations run right to left instead of left to right."
+            "en": "When enabled, slide animations run right to left instead of left to right.",
+            "sv": "När detta är på går glidanimationerna från höger till vänster i stället för vänster till höger."
           }
         },
         {
           "id": "firmware",
           "type": "label",
           "label": {
-            "en": "WLED Firmware"
+            "en": "WLED Firmware",
+            "sv": "WLED-firmware"
           },
           "value": "Unknown"
         },
@@ -267,7 +313,8 @@
           "id": "ip_address",
           "type": "label",
           "label": {
-            "en": "IP Address"
+            "en": "IP Address",
+            "sv": "IP-adress"
           },
           "value": "Unknown"
         }

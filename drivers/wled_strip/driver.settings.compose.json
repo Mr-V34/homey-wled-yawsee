@@ -2,38 +2,62 @@
   {
     "id": "num_leds",
     "type": "number",
-    "label": { "en": "Number of LEDs" },
+    "label": {
+      "en": "Number of LEDs",
+      "sv": "Antal lysdioder"
+    },
     "value": 20,
     "min": 1,
     "max": 1024,
-    "hint": { "en": "Must match your physical LED count." }
+    "hint": {
+      "en": "Must match your physical LED count.",
+      "sv": "Måste stämma med antalet lysdioder på slingan."
+    }
   },
   {
     "id": "slide_speed_ms",
     "type": "number",
-    "label": { "en": "Slide speed (ms per LED)" },
-    "value": 50,
-    "min": 10,
+    "label": {
+      "en": "Slide speed (ms per LED)",
+      "sv": "Glidhastighet (ms per lysdiod)"
+    },
+    "value": 25,
+    "min": 0,
     "max": 500,
-    "hint": { "en": "50 ms × 20 LEDs = 1 second total animation." }
+    "hint": {
+      "en": "Time per LED step. 0 = as fast as possible. 25 ms × 40 LEDs = 1 second.",
+      "sv": "Tid per lysdiodssteg. 0 = så snabbt som möjligt. 25 ms × 40 lysdioder = 1 sekund."
+    }
   },
   {
     "id": "reverse",
     "type": "checkbox",
-    "label": { "en": "Reverse direction" },
+    "label": {
+      "en": "Reverse direction",
+      "sv": "Omvänd riktning"
+    },
     "value": false,
-    "hint": { "en": "When enabled, slide animations run right to left instead of left to right." }
+    "hint": {
+      "en": "When enabled, slide animations run right to left instead of left to right.",
+      "sv": "När detta är på går glidanimationerna från höger till vänster i stället för vänster till höger."
+    }
   },
   {
     "id": "firmware",
     "type": "label",
-    "label": { "en": "WLED Firmware" },
+    "label": {
+      "en": "WLED Firmware",
+      "sv": "WLED-firmware"
+    },
     "value": "Unknown"
   },
   {
     "id": "ip_address",
     "type": "label",
-    "label": { "en": "IP Address" },
+    "label": {
+      "en": "IP Address",
+      "sv": "IP-adress"
+    },
     "value": "Unknown"
   }
 ]

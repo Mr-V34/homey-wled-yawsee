@@ -26,11 +26,11 @@
       margin-top: 6px;
       outline: none;
     }
-    input:focus { border-color: #4A90D9; }
+    input:focus { border-color: #E05000; }
     button {
       width: 100%;
       padding: 14px;
-      background: #4A90D9;
+      background: #E05000;
       color: #fff;
       border: none;
       border-radius: 10px;
@@ -41,24 +41,24 @@
     button:disabled { opacity: 0.5; cursor: default; }
     .error  { font-size: 13px; color: #d9534f; display: none; }
     .status { font-size: 13px; color: #555; min-height: 18px; }
-    .back   { font-size: 13px; color: #4A90D9; cursor: pointer; text-decoration: underline; }
+    .back   { font-size: 13px; color: #E05000; cursor: pointer; text-decoration: underline; }
   </style>
 </head>
 <body>
-  <h2>Enter IP Address</h2>
-  <p>Type the IP address of your WLED device.</p>
+  <h2 data-i18n="pair.manual_entry.heading">Enter IP Address</h2>
+  <p data-i18n="pair.manual_entry.intro">Type the IP address of your WLED device.</p>
 
   <label>
-    IP Address
-    <input type="text" id="ip" placeholder="192.168.107.27"
+    <span data-i18n="pair.manual_entry.ip_label">IP Address</span>
+    <input type="text" id="ip" placeholder="192.168.1.50"
       inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false">
   </label>
 
   <p class="error"  id="error"></p>
   <p class="status" id="status"></p>
 
-  <button id="btn-connect">Connect</button>
-  <span class="back" id="btn-back">← Back to search</span>
+  <button id="btn-connect" data-i18n="pair.manual_entry.connect">Connect</button>
+  <span class="back" id="btn-back" data-i18n="pair.manual_entry.back">← Back to search</span>
 
   <script type="application/javascript">
     // In modern Homey SDK3, `Homey` is a direct global — no onHomeyReady wrapper.
@@ -84,23 +84,23 @@
       errEl.style.display = 'none';
 
       if (!isValidIp(ip)) {
-        showError('Enter a valid IPv4 address (e.g. 192.168.107.27).');
+        showError(Homey.__('pair.manual_entry.invalid_ip'));
         return;
       }
 
       btn.disabled       = true;
-      statEl.textContent = 'Connecting…';
+      statEl.textContent = Homey.__('pair.manual_entry.connecting');
 
       Homey.emit('manual_pair', { ip: ip })
         .then(function(device) {
-          statEl.textContent = 'Found: ' + (device && device.name ? device.name : ip) + ' — Adding…';
+          statEl.textContent = Homey.__('pair.manual_entry.found') + ' ' + (device && device.name ? device.name : ip) + ' — ' + Homey.__('pair.manual_entry.adding');
           return Homey.createDevice(device);
         })
         .then(function() {
           Homey.done();
         })
         .catch(function(err) {
-          showError((err && err.message) ? err.message : 'Could not connect. Check the IP and try again.');
+          showError((err && err.message) ? err.message : Homey.__('pair.manual_entry.failed'));
         });
     });
 

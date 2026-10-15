@@ -1,11 +1,18 @@
 {
   "2.0.0": {
-    "en": "Initial release with the Sliding Effect! Features cinematic on/off animations, robust JSON API communication, and automatic mDNS discovery."
+    "en": "Initial release with the Sliding Effect! Features cinematic on/off animations, robust JSON API communication, and automatic mDNS discovery.",
+    "sv": "Första versionen med glideffekten! Filmiska på/av-animationer, stabil kommunikation via WLED:s JSON-API och automatisk upptäckt av enheter i nätverket."
   },
   "2.1.0": {
-    "en": "Added 'Reverse direction' setting and Flow card support. Improved input validation and error handling for better stability."
+    "en": "Added 'Reverse direction' setting and Flow card support. Improved input validation and error handling for better stability.",
+    "sv": "Ny inställning för omvänd riktning med stöd i Flows. Bättre kontroll av inmatade värden och felhantering för stabilare drift."
   },
   "2.2.0": {
-    "en": "Improved pairing experience — discovered WLED devices are now shown as selectable tiles with a Connect button. New cleaner icons that display correctly on all backgrounds. Improved Flow card labels."
+    "en": "Improved pairing experience — discovered WLED devices are now shown as selectable tiles with a Connect button. New cleaner icons that display correctly on all backgrounds. Improved Flow card labels.",
+    "sv": "Enklare parkoppling – hittade WLED-enheter visas som valbara rutor med en Anslut-knapp. Nya, tydligare ikoner som syns bra på alla bakgrunder. Bättre texter på Flow-korten."
+  },
+  "2.3.0": {
+    "en": "The app is now available in Swedish, and pairing has a fresh new look. Much faster slide animations that keep the colour you have chosen. YAWSEE now sends the animation directly to WLED over the local network, so even long strips slide smoothly. The slide speed can be set all the way down to 0 ms per LED. A slide always runs to the end: pressing again while it runs is ignored. Slide ON and Slide OFF always play the whole animation. Requires 'Receive UDP realtime' in WLED (on by default); without it the strip switches on and off without animation.",
+    "sv": "Appen finns nu på svenska, och parkopplingen har fått ett nytt utseende. Mycket snabbare glidanimationer som behåller den färg du valt. YAWSEE skickar nu animationen direkt till WLED över det lokala nätverket, så även långa slingor glider mjukt. Glidhastigheten kan ställas ända ner till 0 ms per lysdiod. En glidning körs alltid klart: trycker du igen medan den pågår ignoreras det. Glid PÅ och Glid AV spelar alltid hela animationen. Kräver 'Receive UDP realtime' i WLED (på som standard); utan det tänds och släcks slingan utan animation."
   }
 }
