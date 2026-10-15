@@ -12,13 +12,11 @@ A short guide to the Homey app for **WLED** LED strips.
 
 YAWSEE talks to your WLED controller directly over your local network using WLED's
 JSON API. No cloud account is needed. When the strip turns on or off, the LEDs
-light up (or go dark) one by one, with a dimmer LED at the moving edge. Turning the
-device on or off in Homey, or using the Slide flow cards, runs the animation.
+light up (or go dark) one by one. Turning the device on or off in Homey, or using the Slide flow cards, runs the animation.
 
 The animation frames are sent to WLED as UDP realtime packets, which is much faster
 than one web request per LED. If UDP realtime is turned off in WLED, the app falls
-back to the slower JSON API by itself. Switching the strip on or off while it is still
-sliding turns the animation around from where it is.
+back to the slower JSON API by itself.
 
 ### Adding a device
 
@@ -59,7 +57,7 @@ changes made in the WLED app show up in Homey.
 | Action | **Slide OFF** | LEDs go dark one by one from end to start, then the strip turns off. |
 | Action | **Set slide direction** | Left to right, or right to left. |
 | Action | **Set slide speed** | Milliseconds per LED (0–500). |
-| Trigger | **Sliding effect finished** | Runs when an animation is done. Token: *direction* (`on`/`off`). |
+| Trigger | **Sliding effect finished** | Runs when an animation is done. Token: *Slide direction* (`on`/`off`). |
 
 ### Troubleshooting
 
@@ -79,13 +77,12 @@ changes made in the WLED app show up in Homey.
 
 YAWSEE pratar direkt med din WLED-styrenhet över det lokala nätverket via WLED:s
 JSON-API. Inget molnkonto behövs. När slingan tänds eller släcks gör lysdioderna det
-en i taget, med en svagare lysdiod i den rörliga kanten. Animationen körs när du slår
+en i taget. Animationen körs när du slår
 på eller av enheten i Homey, eller när du använder Flow-korten för glidning.
 
 Animationen skickas till WLED som UDP-realtidspaket, vilket går mycket snabbare än en
 webbförfrågan per lysdiod. Om UDP-realtid är avstängt i WLED använder appen
-automatiskt det långsammare JSON-API:et. Slår du på eller av slingan medan den glider
-vänder animationen där den är.
+automatiskt det långsammare JSON-API:et.
 
 ### Lägga till en enhet
 

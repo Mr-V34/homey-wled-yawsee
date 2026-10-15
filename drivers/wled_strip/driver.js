@@ -59,7 +59,12 @@ class WledStripDriver extends Homey.Driver {
     // 'manual_pair' — invoked by manual_entry.html via Homey.emit('manual_pair', { ip })
     session.setHandler('manual_pair', async ({ ip }) => {
       this.log(`[pair] manual_pair: ${ip}`);
-      return this._buildDeviceFromIp(ip);
+      try {
+        return await this._buildDeviceFromIp(ip);
+      } catch (err) {
+        this.error('[pair] manual_pair failed:', err.message);
+        throw new Error(this.homey.__('errors.connect'));
+      }
     });
   }
 

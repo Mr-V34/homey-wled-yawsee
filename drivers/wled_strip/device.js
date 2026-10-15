@@ -265,7 +265,7 @@ class WledStripDevice extends Homey.Device {
     } catch (err) {
       if (this._slideGen !== gen) return;
       this.error('slideOn failed:', err.message);
-      await this.setUnavailable(err.message);
+      await this.setUnavailable(this.homey.__('errors.offline_reason', { reason: err.message }));
     } finally {
       if (this._slideGen === gen) this._animating = false;
     }
@@ -334,7 +334,7 @@ class WledStripDevice extends Homey.Device {
     } catch (err) {
       if (this._slideGen !== gen) return;
       this.error('slideOff failed:', err.message);
-      await this.setUnavailable(err.message);
+      await this.setUnavailable(this.homey.__('errors.offline_reason', { reason: err.message }));
     } finally {
       if (this._slideGen === gen) this._animating = false;
     }

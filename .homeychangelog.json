@@ -16,7 +16,7 @@
     "sv": "Appen finns nu på svenska. Parkopplingen har fått ett nytt utseende."
   },
   "2.3.0": {
-    "en": "Much faster slide animations that keep the colour you have chosen. YAWSEE now sends the animation directly to WLED over the local network, so even long strips slide smoothly. Switching on or off during a slide now turns the animation around instead of starting over. The slide speed can be set all the way down to 0 ms per LED.",
-    "sv": "Mycket snabbare glidanimationer som behåller den färg du valt. YAWSEE skickar nu animationen direkt till WLED över det lokala nätverket, så även långa slingor glider mjukt. Slår du på eller av under en glidning vänder animationen i stället för att börja om. Glidhastigheten kan ställas ända ner till 0 ms per lysdiod."
+    "en": "Much faster slide animations that keep the colour you have chosen. YAWSEE now sends the animation directly to WLED over the local network, so even long strips slide smoothly. The slide speed can be set all the way down to 0 ms per LED.",
+    "sv": "Mycket snabbare glidanimationer som behåller den färg du valt. YAWSEE skickar nu animationen direkt till WLED över det lokala nätverket, så även långa slingor glider mjukt. Glidhastigheten kan ställas ända ner till 0 ms per lysdiod."
   }
 }
