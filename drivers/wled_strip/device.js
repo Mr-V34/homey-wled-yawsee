@@ -4,7 +4,7 @@ const Homey   = require('homey');
 const wled                  = require('../../lib/wled-api');
 const { assertValidIp }     = require('../../lib/wled-api');
 const { hsvToRgb, ctToRgb } = require('../../lib/color-utils');
-const { WledUdpSender, DEFAULT_PORT, validPort, gammaCorrect } = require('../../lib/wled-udp');
+const { WledUdpSender, DEFAULT_PORT, gammaCorrect } = require('../../lib/wled-udp');
 
 // How often to poll WLED for current state (ms)
 const POLL_INTERVAL_MS = 30_000;
@@ -23,22 +23,20 @@ class WledStripDevice extends Homey.Device {
   async onInit() {
     this.log(`Device init: "${this.getName()}" @ ${this.getStoreValue('address')}`);
 
-    this._slideGen     = 0;      // M-04: increments on each new animation; cancels the previous
-    this._animating    = false;  // true while any slide animation is running (suppresses poll)
+    this._animating    = false;  // true while a slide runs: new slides are ignored, poll waits
+    this._stopped      = false;  // set on delete/uninit: a running slide stops
     this._pollTimer    = null;
     this._udpEnabled   = false;  // true when WLED accepts UDP realtime (checked from /json/cfg)
     this._udpChecked   = false;
     this._udpPort      = DEFAULT_PORT;
     this._udpGamma     = 1;
-    // LEDs lit right now (0 = off, num_leds = on); lets a new slide reverse mid-strip
-    this._animPos      = this.getCapabilityValue('onoff') ? this._effectParams().leds : 0;
 
     // UDP realtime sender: one packet per animation frame instead of one HTTP request
     this._udp = new WledUdpSender();
     try {
       this._udp.open();
     } catch (err) {
-      this.log(`UDP unavailable (${err.message}), using HTTP`);
+      this.log(`UDP unavailable (${err.message}), slides switch without animation`);
       this._udp = null;
     }
 
@@ -58,7 +56,9 @@ class WledStripDevice extends Homey.Device {
 
     // ── Settings ────────────────────────────────────────────────────────
     await this._applySettings();
-    await this._detectUdp();
+    // Not awaited: an unreachable WLED must not delay start-up. A slide checks
+    // again if this has not finished.
+    this._detectUdp().catch(this.error);
 
     // ── Poll ────────────────────────────────────────────────────────────
     this._startPolling();
@@ -73,11 +73,13 @@ class WledStripDevice extends Homey.Device {
 
   async onDeleted() {
     this.log(`Device "${this.getName()}" removed`);
+    this._stopped = true;
     this._stopPolling();
     this._closeUdp();
   }
 
   async onUninit() {
+    this._stopped = true;
     this._stopPolling();
     this._closeUdp();
   }
@@ -188,240 +190,117 @@ class WledStripDevice extends Homey.Device {
 
   // ── Sliding effect (worm/snake) ───────────────────────────────────────────
   //
-  // Two WLED segments are used simultaneously:
-  //   Segment 0 — the bright body of the worm (full color)
-  //   Segment 1 — a single dim LED at the leading/trailing edge (TAIL_BRIGHTNESS)
+  // The animation is sent to WLED as UDP realtime frames, one frame per LED
+  // step. The lit part grows (on) or shrinks (off) from the start of the
+  // strip (the end if reversed), with one dim LED at the moving edge
+  // (TAIL_BRIGHTNESS). WLED pauses its own rendering while frames arrive.
+  // The final state is set over HTTP behind the frames, and the last packet
+  // ends realtime mode at once, so WLED shows that state without a jump.
   //
-  // Each step posts both segments atomically, so the tail always tracks the
-  // edge of the body one LED ahead (slideOn) or one LED behind (slideOff).
-  // No WLED transition timing tricks are needed — the effect is purely geometric.
+  // A slide always runs to the end. A request (button or flow) that comes in
+  // while a slide is running is ignored. Without UDP realtime (off in WLED,
+  // port 0, or a socket error) the strip switches on or off at once.
 
   async slideOn() {
-    const gen = ++this._slideGen;
-    this._animating = true;
-    const reverse = this.getSetting('reverse') || false;
-    this.log(`slideOn: starting (${reverse ? 'reverse' : 'forward'})`);
-
-    const { leds, speed, color } = this._effectParams();
-    const tailColor = color.map(c => Math.round(c * TAIL_BRIGHTNESS));
-    const bri = Math.round((this.getCapabilityValue('dim') ?? 1) * 255);
-
-    try {
-      const udp = await this._slideUdp(gen, leds, speed, color, tailColor, bri, reverse, true);
-      if (udp === 'superseded') return;
-      const udpDone = udp === 'done';
-      if (!udpDone && !reverse) {
-        // ── Forward: expand stop left → right ────────────────────────────
-        await this._wledPost({
-          on: true, bri, transition: 0,
-          seg: [
-            { id: 0, start: 0, stop: 1, col: [color, [0,0,0], [0,0,0]], fx: 0 },
-            { id: 1, start: 0, stop: 0 },
-          ],
-        });
-        for (let i = 2; i <= leds; i++) {
-          if (this._slideGen !== gen) { this.log('slideOn: superseded'); return; }
-          await this._wledPost({
-            transition: 0,
-            seg: [
-              { id: 0, stop: i },
-              { id: 1, start: i, stop: Math.min(leds, i + 1), col: [tailColor, [0,0,0], [0,0,0]], fx: 0 },
-            ],
-          });
-          await this._sleep(speed);
-        }
-      } else if (!udpDone) {
-        // ── Reverse: expand start right → left ───────────────────────────
-        await this._wledPost({
-          on: true, bri, transition: 0,
-          seg: [
-            { id: 0, start: leds - 1, stop: leds, col: [color, [0,0,0], [0,0,0]], fx: 0 },
-            { id: 1, start: 0, stop: 0 },
-          ],
-        });
-        for (let start = leds - 2; start >= 0; start--) {
-          if (this._slideGen !== gen) { this.log('slideOn: superseded'); return; }
-          const tStart = start - 1; const tStop = start;
-          await this._wledPost({
-            transition: 0,
-            seg: [
-              { id: 0, start },
-              tStop > tStart
-                ? { id: 1, start: tStart, stop: tStop, col: [tailColor, [0,0,0], [0,0,0]], fx: 0 }
-                : { id: 1, start: 0, stop: 0 },
-            ],
-          });
-          await this._sleep(speed);
-        }
-      }
-
-      if (this._slideGen !== gen) return;
-      await this._wledPost({ transition: 0, seg: [{ id: 1, start: 0, stop: 0 }] });
-      this._animPos = leds;
-      await this.setCapabilityValue('onoff', true).catch(this.error);
-      this.log('slideOn: complete');
-      await this._slideDoneTrigger.trigger(this, { direction: 'on' }, {});
-
-    } catch (err) {
-      if (this._slideGen !== gen) return;
-      this.error('slideOn failed:', err.message);
-      await this.setUnavailable(this.homey.__('errors.offline_reason', { reason: err.message }));
-    } finally {
-      if (this._slideGen === gen) this._animating = false;
-    }
+    await this._slide(true);
   }
 
   async slideOff() {
-    const gen = ++this._slideGen;
-    this._animating = true;
-    const reverse = this.getSetting('reverse') || false;
-    this.log(`slideOff: starting (${reverse ? 'reverse' : 'forward'})`);
+    await this._slide(false);
+  }
 
-    const { leds, speed, color } = this._effectParams();
-    const tailColor = color.map(c => Math.round(c * TAIL_BRIGHTNESS));
-    const bri = Math.round((this.getCapabilityValue('dim') ?? 1) * 255);
+  async _slide(isOn) {
+    const name = isOn ? 'slideOn' : 'slideOff';
+    if (this._animating) {
+      this.log(`${name}: ignored, a slide is running`);
+      return;
+    }
+    this._animating = true;
 
     try {
-      const udp = await this._slideUdp(gen, leds, speed, color, tailColor, bri, reverse, false);
-      if (udp === 'superseded') return;
-      const udpDone = udp === 'done';
-      // Both directions start from a full lit strip
-      if (!udpDone) await this._wledPost({
+      const reverse = this.getSetting('reverse') || false;
+      const { leds, speed, color } = this._effectParams();
+      const bri  = Math.round((this.getCapabilityValue('dim') ?? 1) * 255);
+      const full = {
         on: true, bri, transition: 0,
         seg: [
-          { id: 0, start: 0, stop: leds, col: [color, [0,0,0], [0,0,0]], fx: 0 },
+          { id: 0, start: 0, stop: leds, col: [color, BLACK, BLACK], fx: 0 },
           { id: 1, start: 0, stop: 0 },
         ],
-      });
+      };
+      const final = isOn ? full : { ...full, on: false };
 
-      if (udpDone) {
-        // already animated over UDP
-      } else if (!reverse) {
-        // ── Forward: shrink stop right → left ────────────────────────────
-        for (let i = leds - 1; i >= 1; i--) {
-          if (this._slideGen !== gen) { this.log('slideOff: superseded'); return; }
-          await this._wledPost({
-            transition: 0,
-            seg: [
-              { id: 0, stop: i },
-              { id: 1, start: i, stop: i + 1, col: [tailColor, [0,0,0], [0,0,0]], fx: 0 },
-            ],
-          });
-          await this._sleep(speed);
-        }
-      } else {
-        // ── Reverse: grow start left → right ─────────────────────────────
-        for (let start = 1; start < leds; start++) {
-          if (this._slideGen !== gen) { this.log('slideOff: superseded'); return; }
-          await this._wledPost({
-            transition: 0,
-            seg: [
-              { id: 0, start },
-              { id: 1, start: start - 1, stop: start, col: [tailColor, [0,0,0], [0,0,0]], fx: 0 },
-            ],
-          });
-          await this._sleep(speed);
-        }
+      if (!this._udpChecked) await this._detectUdp();
+      const animated = await this._slideUdp(leds, speed, color, reverse, isOn, full, final);
+      if (this._stopped) return;
+      if (!animated) {
+        this.log(`${name}: no UDP realtime, switching without animation`);
+        await this._wledPost(final);
       }
 
-      if (this._slideGen !== gen) return;
-      await this._wledPost({ on: false, seg: [{ id: 1, start: 0, stop: 0 }] });
-      this._animPos = 0;
-      await this.setCapabilityValue('onoff', false).catch(this.error);
-      this.log('slideOff: complete');
-      await this._slideDoneTrigger.trigger(this, { direction: 'off' }, {});
+      await this.setCapabilityValue('onoff', isOn).catch(this.error);
+      this.log(`${name}: complete (${reverse ? 'reverse' : 'forward'})`);
+      await this._slideDoneTrigger.trigger(this, { direction: isOn ? 'on' : 'off' }, {});
 
     } catch (err) {
-      if (this._slideGen !== gen) return;
-      this.error('slideOff failed:', err.message);
+      if (this._stopped) return;
+      this.error(`${name} failed:`, err.message);
       await this.setUnavailable(this.homey.__('errors.offline_reason', { reason: err.message }));
     } finally {
-      if (this._slideGen === gen) this._animating = false;
+      this._animating = false;
     }
   }
 
-  // ── UDP realtime animation ───────────────────────────────────────────────
-  //
-  // Same worm look as the HTTP path, but each step is one UDP frame on
-  // WLED's notifier port instead of one HTTP request. WLED pauses its own
-  // rendering while frames arrive and applies colour order and brightness.
-  // The final HTTP state is set behind the frames, and the last packet
-  // ends realtime mode at once, so WLED shows that state without a jump.
-  //
-  // The lit part always grows from the same end (start, or end if reversed)
-  // and this._animPos holds how many LEDs are lit. A new slide continues from
-  // there, so switching on/off quickly turns the worm around mid-strip.
-  //
-  // Returns 'done', 'superseded' (a newer animation took over) or 'skipped'
-  // (UDP not available or failed before anything was shown: use HTTP).
+  // Runs the slide as UDP frames. Returns true when it was shown (the final
+  // state is then already set), false when UDP is not available or a send
+  // failed. HTTP errors are thrown: WLED itself is unreachable.
 
-  async _slideUdp(gen, leds, speed, color, tailColor, bri, reverse, isOn) {
-    if (!this._udp || !this._udpEnabled) return 'skipped';
+  async _slideUdp(leds, speed, color, reverse, isOn, full, final) {
+    const udp = this._udp;
+    if (!udp || !this._udpEnabled) return false;
 
     const ip    = this.getStoreValue('address');
     const port  = this._udpPort;
     const delay = Math.max(UDP_MIN_FRAME_MS, speed);
-    const full  = {
-      on: true, bri, transition: 0,
-      seg: [
-        { id: 0, start: 0, stop: leds, col: [color, BLACK, BLACK], fx: 0 },
-        { id: 1, start: 0, stop: 0 },
-      ],
-    };
     // WLED gamma-corrects segment colours but not UDP pixels: do it here so
     // the frames match the colour WLED shows when realtime mode ends.
     const lit   = gammaCorrect(color, this._udpGamma);
-    const tip   = gammaCorrect(tailColor, this._udpGamma);
-    const at    = k => (reverse ? leds - 1 - k : k);   // LED index of the k-th lit LED
-    const from  = Math.max(0, Math.min(leds, Math.round(this._animPos)));
-    const frame = Array.from({ length: leds }, () => BLACK);
-    for (let k = 0; k < from; k++) frame[at(k)] = lit;
+    const tip   = gammaCorrect(color.map(c => Math.round(c * TAIL_BRIGHTNESS)), this._udpGamma);
+    const at    = k => (reverse ? leds - 1 - k : k);   // LED index of the k-th LED from the start end
+    // On starts dark and fills up; off starts full and clears from the far end
+    const frame = Array.from({ length: leds }, () => (isOn ? BLACK : lit));
+    const send  = () => udp.sendFrame(ip, port, frame).catch(err => { err.udp = true; throw err; });
 
     let posted = false;
     try {
-      if (isOn) {
-        for (let k = from; k < leds; k++) {
-          if (this._slideGen !== gen) { this.log('slide (UDP): superseded'); return 'superseded'; }
-          if (k > from) frame[at(k - 1)] = lit;
-          frame[at(k)] = tip;
-          this._animPos = k;
-          await Promise.all([this._udp.sendFrame(ip, port, frame), this._sleep(delay)]);
-          // After the first frame WLED is in realtime mode, so setting the
-          // final state now does not show on the strip yet.
-          if (!posted) { await this._wledPost(full); posted = true; }
-        }
-        if (this._slideGen !== gen) return 'superseded';
-        if (leds > from) frame[at(leds - 1)] = lit;
-        await this._udp.sendFrame(ip, port, frame);
-        if (!posted) await this._wledPost(full);
-        this._animPos = leds;
-      } else {
-        for (let k = from - 1; k >= 0; k--) {
-          if (this._slideGen !== gen) { this.log('slide (UDP): superseded'); return 'superseded'; }
-          if (k < from - 1) frame[at(k + 1)] = BLACK;
-          frame[at(k)] = tip;
-          this._animPos = k;
-          await Promise.all([this._udp.sendFrame(ip, port, frame), this._sleep(delay)]);
-        }
-        if (this._slideGen !== gen) return 'superseded';
-        if (from > 0) frame[at(0)] = BLACK;
-        await this._udp.sendFrame(ip, port, frame);
-        await this._wledPost({ ...full, on: false });
-        this._animPos = 0;
+      for (let step = 0; step < leds; step++) {
+        if (this._stopped) return true;
+        const k = isOn ? step : leds - 1 - step;
+        if (step > 0) frame[at(isOn ? k - 1 : k + 1)] = isOn ? lit : BLACK;
+        frame[at(k)] = tip;
+        await Promise.all([send(), this._sleep(delay)]);
+        // After the first frame WLED is in realtime mode, so setting the
+        // state now does not show on the strip yet. It is set to on even for
+        // a slide off, so the frames are visible when the strip was off.
+        if (!posted) { await this._wledPost(full); posted = true; }
       }
-      await this._udp.exitRealtime(ip, port);
-      this.log(`slide (UDP): ${isOn ? 'on' : 'off'} from ${from}/${leds} LEDs, ${delay} ms per step`);
-      return 'done';
+      if (this._stopped) return true;
+      frame[at(isOn ? leds - 1 : 0)] = isOn ? lit : BLACK;
+      await send();
+      if (!isOn) await this._wledPost(final);
+      await udp.exitRealtime(ip, port);
+      this.log(`slide (UDP): ${isOn ? 'on' : 'off'}, ${leds} LEDs, ${delay} ms per step`);
+      return true;
 
     } catch (err) {
-      if (this._slideGen !== gen) return 'superseded';
-      // A UDP send error is local (socket); HTTP errors mean WLED is unreachable.
-      this.error('slide (UDP) failed, using HTTP:', err.message);
-      // Leave realtime mode so the HTTP animation is visible right away
-      if (this._udp) await this._udp.exitRealtime(ip, port).catch(() => {});
+      if (this._stopped) return true;
+      if (!err.udp) throw err;
+      // A UDP send error is local (socket closed or network down on Homey)
+      this.error('slide (UDP) failed:', err.message);
+      await udp.exitRealtime(ip, port).catch(() => {});
       this._udpEnabled = false;
-      this._udpChecked = false;  // check again on the next successful poll
-      return 'skipped';
+      this._udpChecked = false;  // check again on the next slide or poll
+      return false;
     }
   }
 
@@ -435,8 +314,12 @@ class WledStripDevice extends Homey.Device {
     try {
       const cfg  = await wled.getConfig(ip);
       // Untrusted input: only accept an explicit false / valid numbers
-      this._udpEnabled = cfg?.if?.live?.en !== false;
-      this._udpPort    = validPort(cfg?.if?.sync?.port0);
+      // WLED does not listen for UDP at all when its port is 0 (wled.cpp)
+      const rawPort = cfg?.if?.sync?.port0;
+      const port    = rawPort === undefined ? DEFAULT_PORT : Number(rawPort);
+      const portOk  = Number.isInteger(port) && port > 0 && port < 65536;
+      this._udpEnabled = cfg?.if?.live?.en !== false && portOk;
+      this._udpPort    = portOk ? port : DEFAULT_PORT;
       const gcCol = Number(cfg?.light?.gc?.col);
       const gcVal = Number(cfg?.light?.gc?.val);
       const wledDoesUdpGamma = cfg?.if?.live?.['no-gc'] === false;
@@ -444,10 +327,10 @@ class WledStripDevice extends Homey.Device {
       this._udpChecked = true;
       this.log(this._udpEnabled
         ? `UDP realtime: on (port ${this._udpPort}, gamma ${this._udpGamma})`
-        : 'UDP realtime: off in WLED, using HTTP');
+        : 'UDP realtime: off in WLED (or port 0), slides switch without animation');
     } catch (err) {
       this._udpEnabled = false;
-      this.log(`UDP check failed (${err.message}), using HTTP for now`);
+      this.log(`UDP check failed (${err.message}), will check again`);
     }
   }
 
@@ -483,7 +366,6 @@ class WledStripDevice extends Homey.Device {
       if (!this._udpChecked) await this._detectUdp();
 
       await this.setCapabilityValue('onoff', Boolean(state.on));
-      this._animPos = state.on ? this._effectParams().leds : 0;
       // SECURITY: clamp bri from untrusted WLED response to valid 0-255 range
       const bri = Math.max(0, Math.min(255, Number(state.bri) || 128));
       await this.setCapabilityValue('dim', bri / 255);

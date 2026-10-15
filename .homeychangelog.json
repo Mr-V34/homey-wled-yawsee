@@ -11,12 +11,8 @@
     "en": "Improved pairing experience — discovered WLED devices are now shown as selectable tiles with a Connect button. New cleaner icons that display correctly on all backgrounds. Improved Flow card labels.",
     "sv": "Enklare parkoppling – hittade WLED-enheter visas som valbara rutor med en Anslut-knapp. Nya, tydligare ikoner som syns bra på alla bakgrunder. Bättre texter på Flow-korten."
   },
-  "2.2.1": {
-    "en": "The app is now available in Swedish. Pairing screens have a fresh new look.",
-    "sv": "Appen finns nu på svenska. Parkopplingen har fått ett nytt utseende."
-  },
   "2.3.0": {
-    "en": "Much faster slide animations that keep the colour you have chosen. YAWSEE now sends the animation directly to WLED over the local network, so even long strips slide smoothly. The slide speed can be set all the way down to 0 ms per LED.",
-    "sv": "Mycket snabbare glidanimationer som behåller den färg du valt. YAWSEE skickar nu animationen direkt till WLED över det lokala nätverket, så även långa slingor glider mjukt. Glidhastigheten kan ställas ända ner till 0 ms per lysdiod."
+    "en": "The app is now available in Swedish, and pairing has a fresh new look. Much faster slide animations that keep the colour you have chosen. YAWSEE now sends the animation directly to WLED over the local network, so even long strips slide smoothly. The slide speed can be set all the way down to 0 ms per LED. A slide always runs to the end: pressing again while it runs is ignored. Slide ON and Slide OFF always play the whole animation. Requires 'Receive UDP realtime' in WLED (on by default); without it the strip switches on and off without animation.",
+    "sv": "Appen finns nu på svenska, och parkopplingen har fått ett nytt utseende. Mycket snabbare glidanimationer som behåller den färg du valt. YAWSEE skickar nu animationen direkt till WLED över det lokala nätverket, så även långa slingor glider mjukt. Glidhastigheten kan ställas ända ner till 0 ms per lysdiod. En glidning körs alltid klart: trycker du igen medan den pågår ignoreras det. Glid PÅ och Glid AV spelar alltid hela animationen. Kräver 'Receive UDP realtime' i WLED (på som standard); utan det tänds och släcks slingan utan animation."
   }
 }
