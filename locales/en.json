@@ -1,8 +1,32 @@
 {
   "pair": {
     "start":         { "title": "Add WLED Device" },
-    "list_devices":  { "title": "Select your WLED device" },
-    "manual_entry":  { "title": "Enter IP manually" },
+    "list_devices":  {
+      "title":        "Select your WLED device",
+      "heading":      "Select WLED Device",
+      "searching":    "Searching network…",
+      "connect":      "Connect",
+      "connecting":   "Connecting…",
+      "manual_link":  "Can't find your device? Enter IP manually.",
+      "none_found":   "No WLED devices found.",
+      "none_hint":    "Use the link below to add one manually.",
+      "search_failed":"Search failed:",
+      "manual_hint":  "Use the link below to add manually.",
+      "error":        "Error:"
+    },
+    "manual_entry":  {
+      "title":        "Enter IP manually",
+      "heading":      "Enter IP Address",
+      "intro":        "Type the IP address of your WLED device.",
+      "ip_label":     "IP Address",
+      "connect":      "Connect",
+      "back":         "← Back to search",
+      "invalid_ip":   "Enter a valid IPv4 address (e.g. 192.168.1.50).",
+      "connecting":   "Connecting…",
+      "found":        "Found:",
+      "adding":       "Adding…",
+      "failed":       "Could not connect. Check the IP and try again."
+    },
     "add_devices":   { "title": "Adding device…" }
   },
   "settings": {
@@ -10,10 +34,16 @@
     "slide_speed_ms": "Slide speed (ms per LED)",
     "reverse":        "Reverse direction",
     "firmware":       "WLED Firmware",
-    "ip_address":     "IP Address"
+    "ip_address":     "IP Address",
+    "num_leds_range": "Number of LEDs must be between 1 and 1024 (got __value__)",
+    "speed_range":    "Slide speed must be 10–500 ms"
+  },
+  "flow": {
+    "invalid_speed":  "Invalid speed value: __value__"
   },
   "errors": {
     "offline":       "Device offline",
+    "offline_reason":"Offline: __reason__",
     "connect":       "Could not connect to WLED device"
   }
 }

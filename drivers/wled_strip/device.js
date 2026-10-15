@@ -66,13 +66,13 @@ class WledStripDevice extends Homey.Device {
     if (changedKeys.includes('num_leds')) {
       const clamped = Math.max(1, Math.min(1024, Math.round(newSettings.num_leds)));
       if (clamped !== newSettings.num_leds) {
-        throw new Error(`num_leds must be between 1 and 1024 (got ${newSettings.num_leds})`);
+        throw new Error(this.homey.__('settings.num_leds_range', { value: newSettings.num_leds }));
       }
     }
 
     if (changedKeys.includes('slide_speed_ms')) {
       const v = newSettings.slide_speed_ms;
-      if (v < 10 || v > 500) throw new Error('Slide speed must be 10–500 ms');
+      if (v < 10 || v > 500) throw new Error(this.homey.__('settings.speed_range'));
     }
 
     this.log('Settings validated and applied');
@@ -337,7 +337,7 @@ class WledStripDevice extends Homey.Device {
 
     } catch (err) {
       this.error('Poll failed:', err.message);
-      await this.setUnavailable(`Offline: ${err.message}`);
+      await this.setUnavailable(this.homey.__('errors.offline_reason', { reason: err.message }));
     }
   }
 

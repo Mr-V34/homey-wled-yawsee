@@ -2,13 +2,22 @@
   "triggers": [
     {
       "id": "slide_completed",
-      "title": { "en": "Sliding effect finished" },
-      "hint": { "en": "Fires when a slide animation completes on this device." },
+      "title": {
+        "en": "Sliding effect finished",
+        "sv": "Glideffekten är klar"
+      },
+      "hint": {
+        "en": "Fires when a slide animation completes on this device.",
+        "sv": "Körs när en glidanimation är klar på den här enheten."
+      },
       "tokens": [
         {
           "name": "direction",
           "type": "string",
-          "title": { "en": "Slide direction" },
+          "title": {
+            "en": "Slide direction",
+            "sv": "Glidriktning"
+          },
           "example": "on"
         }
       ]
@@ -17,39 +26,81 @@
   "actions": [
     {
       "id": "slide_on",
-      "title": { "en": "Slide ON" },
-      "hint": { "en": "LEDs fill one by one from start to end, then hold." }
+      "title": {
+        "en": "Slide ON",
+        "sv": "Glid PÅ"
+      },
+      "hint": {
+        "en": "LEDs fill one by one from start to end, then hold.",
+        "sv": "Lysdioderna tänds en i taget från början till slut och lyser sedan kvar."
+      }
     },
     {
       "id": "slide_off",
-      "title": { "en": "Slide OFF" },
-      "hint": { "en": "LEDs clear one by one from end to start, then power off." }
+      "title": {
+        "en": "Slide OFF",
+        "sv": "Glid AV"
+      },
+      "hint": {
+        "en": "LEDs clear one by one from end to start, then power off.",
+        "sv": "Lysdioderna släcks en i taget från slut till början, sedan stängs slingan av."
+      }
     },
     {
       "id": "set_reverse",
-      "title": { "en": "Set slide direction" },
-      "titleFormatted": { "en": "Set slide direction to [[direction]]" },
+      "title": {
+        "en": "Set slide direction",
+        "sv": "Ställ in glidriktning"
+      },
+      "titleFormatted": {
+        "en": "Set slide direction to [[direction]]",
+        "sv": "Ställ in glidriktning till [[direction]]"
+      },
       "args": [
         {
           "name": "direction",
           "type": "dropdown",
-          "title": { "en": "Direction" },
+          "title": {
+            "en": "Direction",
+            "sv": "Riktning"
+          },
           "values": [
-            { "id": "forward", "label": { "en": "Left to right" } },
-            { "id": "reverse", "label": { "en": "Right to left" } }
+            {
+              "id": "forward",
+              "label": {
+                "en": "Left to right",
+                "sv": "Vänster till höger"
+              }
+            },
+            {
+              "id": "reverse",
+              "label": {
+                "en": "Right to left",
+                "sv": "Höger till vänster"
+              }
+            }
           ]
         }
       ]
     },
     {
       "id": "set_slide_speed",
-      "title": { "en": "Set slide speed" },
-      "titleFormatted": { "en": "Set slide speed to [[speed]] ms per LED" },
+      "title": {
+        "en": "Set slide speed",
+        "sv": "Ställ in glidhastighet"
+      },
+      "titleFormatted": {
+        "en": "Set slide speed to [[speed]] ms per LED",
+        "sv": "Ställ in glidhastighet till [[speed]] ms per lysdiod"
+      },
       "args": [
         {
           "name": "speed",
           "type": "number",
-          "title": { "en": "Speed (ms per LED)" },
+          "title": {
+            "en": "Speed (ms per LED)",
+            "sv": "Hastighet (ms per lysdiod)"
+          },
           "min": 10,
           "max": 500,
           "step": 10

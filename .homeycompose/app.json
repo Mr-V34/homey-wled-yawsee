@@ -1,16 +1,18 @@
 {
   "id": "com.wled.slideeffect",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "platforms": [
     "local"
   ],
   "name": {
-    "en": "YAWSEE"
+    "en": "YAWSEE",
+    "sv": "YAWSEE"
   },
   "description": {
-    "en": "Sliding on/off animations for WLED LED strips."
+    "en": "Sliding on/off animations for WLED LED strips.",
+    "sv": "Glidande på/av-animationer för WLED LED-slingor."
   },
   "tags": {
     "en": [
@@ -19,21 +21,38 @@
       "esp32",
       "neopixel",
       "addressable"
+    ],
+    "sv": [
+      "wled",
+      "led",
+      "esp32",
+      "neopixel",
+      "ledslinga",
+      "adresserbar"
     ]
   },
   "category": "lights",
-  "brandColor": "#4A90D9",
+  "brandColor": "#E05000",
   "images": {
     "small": "/assets/images/small.png",
     "large": "/assets/images/large.png",
     "xlarge": "/assets/images/xlarge.png"
   },
   "author": {
-    "name": "Mr-V34",
+    "name": "Peter Persson (Mr-V34)",
     "email": "info@v34.com"
+  },
+  "contributors": {
+    "developers": [
+      {
+        "name": "B.Frank"
+      }
+    ]
   },
   "bugs": {
     "url": "https://github.com/Mr-V34/homey-wled-yawsee/issues"
   },
+  "homepage": "https://github.com/Mr-V34/homey-wled-yawsee/blob/main/docs/MANUAL.md",
+  "support": "mailto:info@v34.com",
   "source": "https://github.com/Mr-V34/homey-wled-yawsee"
 }

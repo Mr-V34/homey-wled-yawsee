@@ -33,7 +33,7 @@ class WledStripDriver extends Homey.Driver {
     this.homey.flow.getActionCard('set_slide_speed')
       .registerRunListener(async ({ device, speed }) => {
         const n = Number(speed);
-        if (!Number.isFinite(n)) throw new Error(`Invalid speed value: ${speed}`);
+        if (!Number.isFinite(n)) throw new Error(this.homey.__('flow.invalid_speed', { value: speed }));
         const clamped = Math.max(10, Math.min(500, Math.round(n)));
         this.log(`[flow] set_slide_speed → ${device.getName()} = ${clamped} ms`);
         await device.setSettings({ slide_speed_ms: clamped });

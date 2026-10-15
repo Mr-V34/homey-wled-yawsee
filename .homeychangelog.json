@@ -1,11 +1,18 @@
 {
   "2.0.0": {
-    "en": "Initial release with the Sliding Effect! Features cinematic on/off animations, robust JSON API communication, and automatic mDNS discovery."
+    "en": "Initial release with the Sliding Effect! Features cinematic on/off animations, robust JSON API communication, and automatic mDNS discovery.",
+    "sv": "Första versionen med glideffekten! Filmiska på/av-animationer, stabil kommunikation via WLED:s JSON-API och automatisk upptäckt av enheter i nätverket."
   },
   "2.1.0": {
-    "en": "Added 'Reverse direction' setting and Flow card support. Improved input validation and error handling for better stability."
+    "en": "Added 'Reverse direction' setting and Flow card support. Improved input validation and error handling for better stability.",
+    "sv": "Ny inställning för omvänd riktning med stöd i Flows. Bättre kontroll av inmatade värden och felhantering för stabilare drift."
   },
   "2.2.0": {
-    "en": "Improved pairing experience — discovered WLED devices are now shown as selectable tiles with a Connect button. New cleaner icons that display correctly on all backgrounds. Improved Flow card labels."
+    "en": "Improved pairing experience — discovered WLED devices are now shown as selectable tiles with a Connect button. New cleaner icons that display correctly on all backgrounds. Improved Flow card labels.",
+    "sv": "Enklare parkoppling – hittade WLED-enheter visas som valbara rutor med en Anslut-knapp. Nya, tydligare ikoner som syns bra på alla bakgrunder. Bättre texter på Flow-korten."
+  },
+  "2.2.1": {
+    "en": "The app is now available in Swedish. Pairing screens have a fresh new look.",
+    "sv": "Appen finns nu på svenska. Parkopplingen har fått ett nytt utseende."
   }
 }
